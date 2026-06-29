@@ -1,60 +1,79 @@
 <!DOCTYPE html>
 <html lang="cs">
-    <head>
-        <meta charset="UTF-8">
-        <title>Časovač</title>
-    </head>
+<head>
     <meta charset="UTF-8">
-    <body>
-        <div style="height:30px;background:#ddd"><div id="lista" style="height:100%;width:100%;background:rgb(255, 0, 0)"></div></div>
-        <br>
-        <input type="time" id="zadani" value="05:00" style="font-size:40px;display:block;margin:auto">
-        <div id="odpocitavadlo" style="text-align:center;font-size:367px;color:rgb(255, 0, 0)">05:00</div>
-        <button onclick="start()" style="font-size:40px;width:100%">Start</button>
-        <button onclick="stop()" style="font-size:40px;width:100%">Stop</button>
-        <button onclick="reset()" style="font-size:40px;width:100%">Reset</button>
-        <script>
-            let bezi=0,celkem=0,konec=0,zbyva=0, odpocitavadlo=document.getElementById("odpocitavadlo"), lista=document.getElementById("lista"), zadani=document.getElementById("zadani");
-            const format=s=>{
-                s=Math.ceil(s);
-                return String(s/60|0).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
+    <title>Časovač</title>
+</head>
+<body>
+    <div style="height:30px;background:#ddd"><div id="lista" style="height:100%;width:100%;background:rgb(0,255,0)"></div></div>
+    <br>
+    <input type="time" id="zadani" value="05:00" style="font-size:40px;display:block;margin:auto">
+    <div id="odpocitavadlo" style="text-align:center;font-size:413px;color:rgb(0,255,0)">05:00</div>
+    <button id="startstop" onclick="startStop()" style="font-size:40px;width:100%">Start</button>
+    <button onclick="reset()" style="font-size:40px;width:100%">Reset</button>
+    <script>
+        let bezi = 0,celkem = 0,konec = 0,zbyva = 0,odpocitavadlo = document.getElementById("odpocitavadlo"),lista = document.getElementById("lista"),zadani = document.getElementById("zadani"),tlacitko = document.getElementById("startstop");
+        const format = s => {
+            s = Math.ceil(s);
+            return String(s / 60 | 0).padStart(2, "0") + ":" +String(s % 60).padStart(2, "0");
+        };
+        function aktualizace() {
+            if (!bezi) return;
+            zbyva = (konec - Date.now()) / 1000;
+            if (zbyva > 60) {odpocitavadlo.style.color = "rgb(0,255,0)";lista.style.background = "rgb(0,255,0)";
+            } else if (zbyva > 30) {odpocitavadlo.style.color = "rgb(0,0,255)";lista.style.background = "rgb(0,0,255)";
+            } else if (zbyva > 15) {odpocitavadlo.style.color = "rgb(255,255,0)";lista.style.background = "rgb(255,255,0)";
+            } else if (zbyva > 5) {odpocitavadlo.style.color = "rgb(255,117,0)";lista.style.background = "rgb(255,117,0)";
+            } else {odpocitavadlo.style.color = "rgb(255,0,0)";lista.style.background = "rgb(255,0,0)";
             }
-            function aktualizace(){
-                if(!bezi)return;
-                zbyva=(konec-Date.now())/1000;
-                if(zbyva<=0){
-                    zbyva=0;
-                    odpocitavadlo.textContent="finitoooo";
-                    lista.style.width="0%";
-                    stop();
-                    return;
-                }
-                odpocitavadlo.textContent=format(zbyva);
-                lista.style.width=zbyva/celkem*100+"%";
-                requestAnimationFrame(aktualizace);
-            }
-            function start(){
-                if(bezi)return;
-                if(!zbyva){
-                    let t=zadani.value.split(":");
-                    zbyva=+t[0]*60+ +t[1];
-                    celkem=zbyva;
-                }
-                konec=Date.now()+zbyva*1000;
-                bezi=1;
-                requestAnimationFrame(aktualizace);
-            }
-            function stop(){
-                if(!bezi)return;
-                zbyva=(konec-Date.now())/1000;
-                bezi=0;
-            }
-            function reset(){
+            if (zbyva <= 0) {
+                odpocitavadlo.style.color = "rgb(0,0,0)";
+                zbyva = 0;
+                odpocitavadlo.textContent = "finitoooo";
+                lista.style.width = "0%";
                 stop();
-                zbyva=celkem=0;
-                odpocitavadlo.textContent=zadani.value;
-                lista.style.width="100%";
+                tlacitko.textContent = "Start";
+                return;
             }
-        </script>
-    </body>
+            odpocitavadlo.textContent = format(zbyva);
+            lista.style.width = zbyva / celkem * 100 + "%";
+            requestAnimationFrame(aktualizace);
+        }
+        function start() {
+            if (bezi) return;
+            if (!zbyva) {
+                let t = zadani.value.split(":");
+                zbyva = +t[0] * 60 + +t[1];
+                celkem = zbyva;
+            }
+            konec = Date.now() + zbyva * 1000;
+            bezi = 1;
+            requestAnimationFrame(aktualizace);
+        }
+        function stop() {
+            if (!bezi) return;
+            zbyva = (konec - Date.now()) / 1000;
+            bezi = 0;
+        }
+        function startStop() {
+            if (bezi) {
+                stop();
+                tlacitko.textContent = "Start";
+            } else {
+                start();
+                tlacitko.textContent = "Stop";
+            }
+        }
+        function reset() {
+            stop();
+            tlacitko.textContent = "Start";
+            zbyva = 0;
+            celkem = 0;
+            odpocitavadlo.textContent = zadani.value;
+            odpocitavadlo.style.color = "rgb(0,255,0)";
+            lista.style.width = "100%";
+            lista.style.background = "rgb(0,255,0)";
+        }
+    </script>
+</body>
 </html>
