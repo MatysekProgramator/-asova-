@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Časovač</title>
+</head>
+<body>
+
+    <input type="time" id="zadani" value="05:00" style="font-size: 40px; display: block; margin: 0 auto;">
+
+    <div id="odpocitavadlo" style="text-align: center; font-size: 410px; color: rgb(255, 0, 0);">05:00</div>
+
+    <button onclick="start()" style="font-size: 40px; width: 100%;">Start</button>
+    <button onclick="stop()" style="font-size: 40px; width: 100%;">Stop</button>
+    <button onclick="reset()" style="font-size: 40px; width: 100%;">Reset</button>
+
+    <script>
+        let chytreodpocitavadlo, zbyva = 0;
+
+        function format(s){
+            let m = Math.floor(s / 60);
+            let sec = s % 60;
+            return String(m).padStart(2,"0")+":"+String(sec).padStart(2,"0");
+        }
+
+        function start(){
+            if(chytreodpocitavadlo) return;
+
+                if(zbyva === 0){
+                    let t = document.getElementById("zadani").value.split(":");
+                    zbyva = (+t[0]) * 60 + (+t[1]);
+                }
+
+                document.getElementById("odpocitavadlo").textContent = format(zbyva);
+
+                chytreodpocitavadlo = setInterval(() => {
+                if(zbyva > 0){
+                    zbyva--;
+                    document.getElementById("odpocitavadlo").textContent = format(zbyva);
+                } else {
+                    stop();
+                    document.getElementById("odpocitavadlo").textContent = "finitoooo"
+                }
+            }, 1000);
+        }
+
+        function stop(){
+            clearInterval(chytreodpocitavadlo);
+            chytreodpocitavadlo = null;
+
+        }
+
+        function reset(){
+            stop();
+            zbyva = 0;
+            document.getElementById("odpocitavadlo").textContent = document.getElementById("zadani").value;
+        }
+    </script>
+
+</body>
+</html>
